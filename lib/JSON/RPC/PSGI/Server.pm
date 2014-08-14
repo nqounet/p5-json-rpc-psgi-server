@@ -1,11 +1,32 @@
 package JSON::RPC::PSGI::Server;
-use 5.008001;
 use strict;
 use warnings;
-
 our $VERSION = "0.01";
 
+use parent qw(Plack::Component);
+use JSON::RPC::Spec;
+use Plack::Request;
+use Plack::Util::Accessor qw(rpc);
 
+sub prepare_app {
+    my ($self) = @_;
+    my $rpc = JSON::RPC::Spec->new;
+    while (my ($name, $callback) = each %{$self->{methods}}) {
+        $rpc->register($name, $callback);
+    }
+    $self->rpc($rpc);
+    return;
+}
+
+sub call {
+    my ($self, $env) = @_;
+    my $req  = Plack::Request->new($env);
+    my $body = $self->rpc->parse($req->content);
+    if (length $body) {
+        return [200, ['Content-Type' => 'application/json'], [$body]];
+    }
+    return [204, [], []];
+}
 
 1;
 __END__
@@ -14,15 +35,36 @@ __END__
 
 =head1 NAME
 
-JSON::RPC::PSGI::Server - It's new $module
+JSON::RPC::PSGI::Server - Yet another JSON-RPC 2.0 psgi application
 
 =head1 SYNOPSIS
 
+    # app.psgi
     use JSON::RPC::PSGI::Server;
+    use Plack::Builder;
+    my $jsonrpc = JSON::RPC::PSGI::Server->new(
+        methods => {
+            echo  => sub { $_[0] },
+            empty => sub {''}
+        }
+    );
+    my $app = sub { [204, [], []] };
+    builder {
+        mount '/jsonrpc', $jsonrpc->to_app;
+        mount '/' => $app;
+    };
+
+    # run
+    $ plackup app.psgi
+
+    # POST http://localhost:5000/jsonrpc
+    #     {"jsonrpc":"2.0","method":"echo","params":"Hello","id":1}
+    # return content
+    #     {"jsonrpc":"2.0","result":"Hello","id":1}
 
 =head1 DESCRIPTION
 
-JSON::RPC::PSGI::Server is ...
+JSON::RPC::PSGI::Server is Yet another JSON-RPC 2.0 psgi application
 
 =head1 LICENSE
 

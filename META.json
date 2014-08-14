@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Yet another JSON-RPC 2.0 psgi application",
    "author" : [
       "nqounet <mail@nqou.net>"
    ],
@@ -42,6 +42,8 @@
       },
       "runtime" : {
          "requires" : {
+            "JSON::RPC::Spec" : "0",
+            "Plack" : "0",
             "perl" : "5.008001"
          }
       },
@@ -52,6 +54,16 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/nqounet/p5-json-rpc-psgi-server/issues"
+      },
+      "homepage" : "https://github.com/nqounet/p5-json-rpc-psgi-server",
+      "repository" : {
+         "url" : "https://github.com/nqounet/p5-json-rpc-psgi-server.git",
+         "web" : "https://github.com/nqounet/p5-json-rpc-psgi-server"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:NQOUNET"
 }
