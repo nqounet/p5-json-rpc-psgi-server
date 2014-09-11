@@ -1,7 +1,7 @@
 package JSON::RPC::PSGI::Server;
 use strict;
 use warnings;
-our $VERSION = "0.01";
+use version; our $VERSION = version->declare("v0.1.0");
 
 use parent qw(Plack::Component);
 use JSON::RPC::Spec;
